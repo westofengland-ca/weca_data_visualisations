@@ -30,4 +30,4 @@ fig.update_layout(
 )
 
 # Save as a standalone .html file within the visuals folder
-fig.write_html(r"visuals/dds/viz01/plotly_chart.html", include_plotlyjs="cdn")
+fig.write_html(r"visuals/dds/viz01/index.html", include_plotlyjs="cdn")
