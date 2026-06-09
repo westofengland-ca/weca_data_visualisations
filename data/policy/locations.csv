@@ -1,6 +1,6 @@
-uid,name,lon,lat,category
-1,alpha,-2.5879,51.4545,retail
-2,beta,-2.3590,51.3811,office
-3,charlie,-2.9779,51.3470,leisure
-4,delta,-2.4184,51.5416,transport
-5,echo,-2.4958,51.4130,residential
+uid,name,lon,lat,category,link_url
+1,alpha,-2.5879,51.4545,retail,http://localhost:8000/alpha
+2,beta,-2.3590,51.3811,office,http://localhost:8000/beta
+3,charlie,-2.9779,51.3470,leisure,http://localhost:8000/charlie
+4,delta,-2.4184,51.5416,transport,http://localhost:8000/delta
+5,echo,-2.4958,51.4130,residential,http://localhost:8000/echo

@@ -34,34 +34,70 @@
   <script>
     // >>> GENERATED_LOCATIONS
     const LOCATIONS = [
-      {"uid": 1, "name": "alpha", "lon": -2.5879, "lat": 51.4545, "category": "retail"},
-      {"uid": 2, "name": "beta", "lon": -2.359, "lat": 51.3811, "category": "office"},
-      {"uid": 3, "name": "charlie", "lon": -2.9779, "lat": 51.347, "category": "leisure"},
-      {"uid": 4, "name": "delta", "lon": -2.4184, "lat": 51.5416, "category": "transport"},
-      {"uid": 5, "name": "echo", "lon": -2.4958, "lat": 51.413, "category": "residential"}
+      {"uid": 1, "name": "alpha", "lon": -2.5879, "lat": 51.4545, "category": "retail", "link_url": "http://localhost:8000/alpha"},
+      {"uid": 2, "name": "beta", "lon": -2.359, "lat": 51.3811, "category": "office", "link_url": "http://localhost:8000/beta"},
+      {"uid": 3, "name": "charlie", "lon": -2.9779, "lat": 51.347, "category": "leisure", "link_url": "http://localhost:8000/charlie"},
+      {"uid": 4, "name": "delta", "lon": -2.4184, "lat": 51.5416, "category": "transport", "link_url": "http://localhost:8000/delta"},
+      {"uid": 5, "name": "echo", "lon": -2.4958, "lat": 51.413, "category": "residential", "link_url": "http://localhost:8000/echo"}
     ];
     // <<< GENERATED_LOCATIONS
 
+    const CATEGORY_COLORS = {
+      retail: "#e41a1c",
+      office: "#377eb8",
+      leisure: "#4daf4a",
+      transport: "#984ea3",
+      residential: "#ff7f00",
+    };
+
+    const DEFAULT_COLOR = "#666666";
+
+    function categoryColor(category) {
+      return CATEGORY_COLORS[category] || DEFAULT_COLOR;
+    }
+
     const map = L.map("map").setView([51.42, -2.55], 9);
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    }).addTo(map);
+    const basemap = L.tileLayer(
+      "http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
+      {
+        maxZoom: 19,
+        attribution:
+          "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community",
+      }
+    ).addTo(map);
 
+    const categoryLayers = {};
     const bounds = [];
 
     LOCATIONS.forEach((location) => {
-      const marker = L.marker([location.lat, location.lon]).addTo(map);
+      if (!categoryLayers[location.category]) {
+        categoryLayers[location.category] = L.layerGroup();
+      }
 
-      marker.bindPopup(
+      const point = L.circleMarker([location.lat, location.lon], {
+        radius: 8,
+        fillColor: categoryColor(location.category),
+        color: "#333333",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.85,
+      });
+
+      point.bindPopup(
         `<strong>${location.name}</strong><br>` +
         `Category: ${location.category}<br>` +
-        `UID: ${location.uid}`
+        `UID: ${location.uid}<br>` +
+        `<a href="${location.link_url}" target="_blank" rel="noopener noreferrer">Link</a>`
       );
 
+      categoryLayers[location.category].addLayer(point);
       bounds.push([location.lat, location.lon]);
     });
+
+    Object.values(categoryLayers).forEach((layer) => layer.addTo(map));
+
+    L.control.layers({ "World Topo": basemap }, categoryLayers).addTo(map);
 
     if (bounds.length > 0) {
       map.fitBounds(bounds, { padding: [40, 40] });
